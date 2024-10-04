@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DicountEngine", "acme-discount-engine\DicountEngine.csproj", "{63780FC6-00CA-4DBB-B37D-650A1429289D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscountEngine", "acme-discount-engine\DiscountEngine.csproj", "{63780FC6-00CA-4DBB-B37D-650A1429289D}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DiscountTests", "discount_tests\DiscountTests.csproj", "{9219BF8C-AFB5-4A31-952B-D41F4BFE6734}"
 EndProject

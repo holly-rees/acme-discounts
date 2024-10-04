@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\acme-discount-engine\DicountEngine.csproj" />
+    <ProjectReference Include="..\acme-discount-engine\DiscountEngine.csproj" />
   </ItemGroup>
 
   <ItemGroup>
