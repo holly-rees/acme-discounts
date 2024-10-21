@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace acme_discount_engine.Money
+namespace acme_discount_engine.Models
 {
     public class Money
     {
@@ -14,9 +14,24 @@ namespace acme_discount_engine.Money
             _amount = amount;
         }
 
+        public Money(double amount)
+        {
+            _amount = (decimal)amount;
+        }
+
         public decimal getAmount()
         {
             return _amount;
+        }
+
+        public double getAmountAsDouble()
+        {
+            return (double)_amount;
+        }
+
+        public double getRoundedAmount(int decimals)
+        {
+            return Math.Round((double)_amount, decimals);
         }
 
         public void AddMoney(decimal money)

@@ -1,4 +1,4 @@
-using acme_discount_engine.Money;
+using acme_discount_engine.Models;
 namespace money_tests;
 
 public class Tests
@@ -7,7 +7,7 @@ public class Tests
     [SetUp]
     public void Setup()
     {
-        money = new Money(0);
+        money = new Money(0.00);
     }
 
     [Test]
