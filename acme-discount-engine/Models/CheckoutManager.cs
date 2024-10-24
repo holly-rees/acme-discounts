@@ -19,8 +19,6 @@ namespace acme_discount_engine.Models
             this.basket = basket;
             this.discounts = discountStrategies;
         }
-
-
         public void ApplyDiscounts()
         {
             foreach (var discount in discounts)
