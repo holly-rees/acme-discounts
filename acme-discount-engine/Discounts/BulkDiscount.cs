@@ -17,8 +17,9 @@ namespace acme_discount_engine.Discounts
             TwoForOneList = twoForOneList;
         }
 
-        public void ApplyTo(List<Item> items, Money totalAfter2for1, Money runningTotal)
+        public void ApplyTo(Basket basket)
         {
+            List<Item> items = basket.GetItems();
             string currentItem = string.Empty;
             int itemCount = 0;
             for (int i = 0; i < items.Count; i++)
@@ -34,25 +35,25 @@ namespace acme_discount_engine.Discounts
                     itemCount++;
                     if (isEligibleForBulkDiscount(item, itemCount))
                     {
-                        for (int j = 0; j < 10; j++)
-                        {
-                            // works backwards and apply discount to each of the 10 items
-                            Item bulkItem = items[i - j];
-                            Money money = new Money(bulkItem.Price);
-                            money.ApplyDiscountByPercent(2);
-                            bulkItem.Price = money.getAmountAsDouble();
-                        }
+                        ApplyBulkDiscount(items, i);
                         itemCount = 0;
                     }
                 }
             }
-            runningTotal.Reset();
-            runningTotal.AddMoney((decimal)items.Sum(item => item.Price));
+            decimal totalAfterDiscount = basket.SumItems();
+            basket.UpdateRunningTotal(totalAfterDiscount);
         }
 
-
-
-
+        private void ApplyBulkDiscount(List<Item> items, int currentIndex)
+        {
+            for (int j = 0; j < 10; j++)
+            {
+                Item bulkItem = items[currentIndex - j];
+                Money money = new Money(bulkItem.Price);
+                money.ApplyDiscountByPercent(2);
+                bulkItem.Price = money.getAmountAsDouble();
+            }
+        }
 
         public bool isEligibleForBulkDiscount(Item item, int itemCount)
         {

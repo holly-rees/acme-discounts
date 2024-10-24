@@ -19,8 +19,9 @@ namespace acme_discount_engine.Discounts
             NoDiscount = noDiscount;
             Time = time;
         }
-        public void ApplyTo(List<Item> items, Money totalAfter2for1, Money runningTotal)
+        public void ApplyTo(Basket basket)
         {
+            List<Item> items = basket.GetItems();
             foreach (var item in items)
             {
                 int daysUntilDate = (item.Date - DateTime.Today).Days;
@@ -37,13 +38,13 @@ namespace acme_discount_engine.Discounts
                     }
                 }
             }
-            runningTotal.Reset();
-            runningTotal.AddMoney((decimal)items.Sum(item => item.Price));
+            decimal totalAfterDiscount = basket.SumItems();
+            basket.UpdateRunningTotal(totalAfterDiscount);
         }
 
         public void ApplyPerishableItemDiscount(Item item)
         {
-            Money money = new Money((decimal)item.Price);
+            Money money = new Money(item.Price);
 
             if (Time.Hour >= 0 && Time.Hour < 12)
             {

@@ -17,8 +17,9 @@ namespace acme_discount_engine.Discounts
             this.TwoForOneList = twoForOneList;
         }
 
-        public void ApplyTo(List<Item> items, Money totalAfter2for1, Money runningTotal)
+        public void ApplyTo(Basket basket)
         {
+            List<Item> items = basket.GetItems();
             string currentItem = string.Empty;
             int itemCount = 0;
             for (int i = 0; i < items.Count; i++)
@@ -39,9 +40,9 @@ namespace acme_discount_engine.Discounts
                     }
                 }
             }
-            totalAfter2for1.AddMoney((decimal)items.Sum(item => item.Price));
-            runningTotal.Reset();
-            runningTotal.AddMoney((decimal)items.Sum(item => item.Price));
+            decimal totalAfterDiscount = basket.SumItems();
+            basket.UpdateTotalAfter2for1(totalAfterDiscount);
+            basket.UpdateRunningTotal(totalAfterDiscount);
         }
     }
 }

@@ -9,6 +9,6 @@ namespace acme_discount_engine.Discounts
 {
     public interface IDiscountStrategy
     {
-        void ApplyTo(List<Item> items, Money totalAfter2for1, Money total);
+        void ApplyTo(Basket basket);
     }
 }
