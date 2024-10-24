@@ -14,17 +14,14 @@ namespace acme_discount_engine.Models
 
         private List<IDiscountStrategy> discountStrategies;
 
-        private Money? totalAfter2for1Discount;
+        private Money totalAfter2for1Discount = new Money(0.0);
 
-        private Money? finalTotal;
+        private Money runningTotal = new Money(0.0);
 
-        private bool LoyaltyCard;
-
-        public DiscountManager(List<Item> items, List<IDiscountStrategy> discountStrategies, bool LoyaltyCard)
+        public DiscountManager(List<Item> items, List<IDiscountStrategy> discountStrategies)
         {
             this.items = items;
             this.discountStrategies = discountStrategies;
-            this.LoyaltyCard = LoyaltyCard;
         }
 
 
@@ -32,32 +29,17 @@ namespace acme_discount_engine.Models
         {
             SortAlphabetically();
 
-            foreach (var strategy in discountStrategies)
+            foreach (var discount in discountStrategies)
             {
-                strategy.ApplyDiscount(items);
-                if (strategy is TwoForOneDiscount)
-                {
-                    totalAfter2for1Discount = new Money(items.Sum(item => item.Price));
-                }
+                discount.ApplyTo(items, totalAfter2for1Discount, runningTotal);
             }
-            ApplyAnyLoyaltyDiscount();
-
-            return finalTotal.getRoundedAmount(2);
+            return runningTotal.getRoundedAmount(2);
         }
 
         public void SortAlphabetically()
         {
             items.Sort((x, y) => x.Name.CompareTo(y.Name));
         }
-        public void ApplyAnyLoyaltyDiscount()
-        {
-            finalTotal = new Money(items.Sum(item => item.Price));
 
-            bool isOverLoyaltyThreshold = totalAfter2for1Discount.getAmountAsDouble() >= 50.00;
-            if (LoyaltyCard && isOverLoyaltyThreshold)
-            {
-                finalTotal.ApplyDiscountByPercent(2);
-            }
-        }
     }
 }

@@ -17,10 +17,11 @@ namespace acme_discount_engine.Discounts
             {
                 new TwoForOneDiscount(TwoForOneList),
                 new UseByDateDiscount(NoDiscount, Time),
-                new BulkDiscount(TwoForOneList)
+                new BulkDiscount(TwoForOneList),
+                new LoyaltyDiscount(LoyaltyCard)
             };
 
-            DiscountManager discountManager = new DiscountManager(items, discountStrategies, LoyaltyCard);
+            DiscountManager discountManager = new DiscountManager(items, discountStrategies);
 
             double finalAmount = discountManager.ApplyDiscounts();
 

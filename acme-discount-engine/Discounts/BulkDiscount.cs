@@ -17,7 +17,7 @@ namespace acme_discount_engine.Discounts
             TwoForOneList = twoForOneList;
         }
 
-        public void ApplyDiscount(List<Item> items)
+        public void ApplyTo(List<Item> items, Money totalAfter2for1, Money runningTotal)
         {
             string currentItem = string.Empty;
             int itemCount = 0;
@@ -36,7 +36,7 @@ namespace acme_discount_engine.Discounts
                     {
                         for (int j = 0; j < 10; j++)
                         {
-                            // go backwards and apply discount to each of the 10 items
+                            // works backwards and apply discount to each of the 10 items
                             Item bulkItem = items[i - j];
                             Money money = new Money(bulkItem.Price);
                             money.ApplyDiscountByPercent(2);
@@ -46,7 +46,12 @@ namespace acme_discount_engine.Discounts
                     }
                 }
             }
+            runningTotal.Reset();
+            runningTotal.AddMoney((decimal)items.Sum(item => item.Price));
         }
+
+
+
 
 
         public bool isEligibleForBulkDiscount(Item item, int itemCount)

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using AcmeSharedModels;
+using acme_discount_engine.Models;
 
 namespace acme_discount_engine.Discounts
 {
@@ -16,7 +17,7 @@ namespace acme_discount_engine.Discounts
             this.TwoForOneList = twoForOneList;
         }
 
-        public void ApplyDiscount(List<Item> items)
+        public void ApplyTo(List<Item> items, Money totalAfter2for1, Money runningTotal)
         {
             string currentItem = string.Empty;
             int itemCount = 0;
@@ -38,6 +39,9 @@ namespace acme_discount_engine.Discounts
                     }
                 }
             }
+            totalAfter2for1.AddMoney((decimal)items.Sum(item => item.Price));
+            runningTotal.Reset();
+            runningTotal.AddMoney((decimal)items.Sum(item => item.Price));
         }
     }
 }

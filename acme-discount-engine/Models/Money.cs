@@ -29,9 +29,9 @@ namespace acme_discount_engine.Models
             return (double)_amount;
         }
 
-        public double getRoundedAmount(int decimals)
+        public double getRoundedAmount(int decimalPlaces)
         {
-            return Math.Round((double)_amount, decimals);
+            return Math.Round((double)_amount, decimalPlaces);
         }
 
         public void AddMoney(decimal money)
@@ -43,6 +43,11 @@ namespace acme_discount_engine.Models
         {
             decimal multiplier = percentage / 100;
             _amount -= multiplier * _amount;
+        }
+
+        public void Reset()
+        {
+            _amount = 0;
         }
     }
 }

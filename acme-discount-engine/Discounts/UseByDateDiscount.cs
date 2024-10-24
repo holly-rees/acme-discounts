@@ -19,7 +19,7 @@ namespace acme_discount_engine.Discounts
             NoDiscount = noDiscount;
             Time = time;
         }
-        public void ApplyDiscount(List<Item> items)
+        public void ApplyTo(List<Item> items, Money totalAfter2for1, Money runningTotal)
         {
             foreach (var item in items)
             {
@@ -37,6 +37,8 @@ namespace acme_discount_engine.Discounts
                     }
                 }
             }
+            runningTotal.Reset();
+            runningTotal.AddMoney((decimal)items.Sum(item => item.Price));
         }
 
         public void ApplyPerishableItemDiscount(Item item)
@@ -94,5 +96,7 @@ namespace acme_discount_engine.Discounts
         {
             return !NoDiscount.Contains(item.Name);
         }
+
+
     }
 }
