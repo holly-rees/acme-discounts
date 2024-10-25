@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -35,6 +36,16 @@ namespace acme_discount_engine.Models
         }
 
         public void AddMoney(decimal money)
+        {
+            _amount += money;
+        }
+
+        public void AddMoney(double money)
+        {
+            _amount += (decimal)money;
+        }
+
+        public void AddMoney(int money)
         {
             _amount += money;
         }

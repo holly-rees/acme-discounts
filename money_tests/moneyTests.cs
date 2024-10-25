@@ -13,7 +13,7 @@ public class Tests
     [Test]
     public void TestAddMoney()
     {
-        money.AddMoney(12);
+        money.AddMoney(12.00);
         decimal amount = money.getAmount();
         Assert.That(amount, Is.EqualTo(12.00));
     }

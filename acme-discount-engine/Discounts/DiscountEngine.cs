@@ -13,7 +13,7 @@ namespace acme_discount_engine.Discounts
 
         public double ApplyDiscounts(List<Item> items)
         {
-            List<IDiscountStrategy> discountStrategies = new List<IDiscountStrategy>
+            List<IDiscountStrategy> discounts = new List<IDiscountStrategy>
             {
                 new TwoForOneDiscount(TwoForOneList),
                 new UseByDateDiscount(NoDiscount, Time),
@@ -21,11 +21,13 @@ namespace acme_discount_engine.Discounts
                 new LoyaltyDiscount(LoyaltyCard)
             };
 
-            DiscountManager discountManager = new DiscountManager(items, discountStrategies);
+            Basket basket = new Basket(items);
 
-            double finalAmount = discountManager.ApplyDiscounts();
+            CheckoutManager checkout = new CheckoutManager(basket, discounts);
 
-            return finalAmount;
+            checkout.ApplyDiscounts();
+
+            return checkout.GetRoundedTotal();
 
         }
 
