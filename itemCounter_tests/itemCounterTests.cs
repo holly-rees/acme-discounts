@@ -60,7 +60,7 @@ public class Tests
     }
 
     [Test]
-    public void isFirstOfNewItem_ShouldReturnFalseForSameItem()
+    public void TestFirstOfNewItemReturnsFalseForNotNewItem()
     {
         itemCounter.initialiseNewItemCount(item1);
         Assert.IsFalse(itemCounter.isFirstOfNewItem(item1));
