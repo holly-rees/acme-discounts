@@ -29,29 +29,24 @@ namespace acme_discount_engine.Discounts
 
         private void ApplyAny2for1Discounts(List<Item> items)
         {
-            string currentItem = "";
-            int itemCount = 0;
+            ItemCounter counter = new();
+
             foreach (Item item in items)
             {
-                if (isFirstOfNewItem(item, currentItem))
+                if (counter.isFirstOfNewItem(item))
                 {
-                    InitialiseNewItemCounter(out currentItem, out itemCount, item);
+                    counter.initialiseNewItemCount(item);
                 }
                 else
                 {
-                    itemCount++;
-                    if (isEligibleFor2for1Discount(itemCount, item))
+                    counter.increaseCount();
+                    if (isEligibleFor2for1Discount(item, counter.getCount()))
                     {
                         DiscountPriceOf(item);
-                        ResetCounter(itemCount);
+                        counter.ResetCounter();
                     }
                 }
             }
-        }
-
-        private void ResetCounter(int itemCount)
-        {
-            itemCount = 0;
         }
 
         private void DiscountPriceOf(Item item)
@@ -59,20 +54,9 @@ namespace acme_discount_engine.Discounts
             item.Price = 0.00;
         }
 
-        private bool isEligibleFor2for1Discount(int itemCount, Item item)
+        private bool isEligibleFor2for1Discount(Item item, int itemCount)
         {
             return itemCount == 3 && TwoForOneList.Contains(item.Name);
-        }
-
-        private bool isFirstOfNewItem(Item item, string currentItem)
-        {
-            return item.Name != currentItem;
-        }
-
-        private void InitialiseNewItemCounter(out string currentItem, out int itemCount, Item item)
-        {
-            currentItem = item.Name;
-            itemCount = 1;
         }
     }
 }
