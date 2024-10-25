@@ -49,8 +49,6 @@ namespace acme_discount_engine.Models
             runningTotal.AddMoney(total);
         }
 
-
-
         public decimal SumItems()
         {
             return (decimal)items.Sum(item => item.Price);

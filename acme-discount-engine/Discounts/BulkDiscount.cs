@@ -19,32 +19,35 @@ namespace acme_discount_engine.Discounts
 
         public void ApplyTo(Basket basket)
         {
-            List<Item> items = basket.GetItems();
+            ApplyAnyBulkDiscounts(basket.GetItems());
+            decimal totalAfterDiscount = basket.SumItems();
+            basket.UpdateRunningTotal(totalAfterDiscount);
+        }
+
+        private void ApplyAnyBulkDiscounts(List<Item> items)
+        {
             string currentItem = string.Empty;
             int itemCount = 0;
             for (int i = 0; i < items.Count; i++)
             {
                 Item item = items[i];
-                if (item.Name != currentItem)
+                if (isFirstOfNewItem(item, currentItem))
                 {
-                    currentItem = item.Name;
-                    itemCount = 1;
+                    InitialiseNewItemCounter(out currentItem, out itemCount, item);
                 }
                 else
                 {
                     itemCount++;
                     if (isEligibleForBulkDiscount(item, itemCount))
                     {
-                        ApplyBulkDiscount(items, i);
-                        itemCount = 0;
+                        ReducePriceForItemSet(items, i);
+                        ResetCounter(itemCount);
                     }
                 }
             }
-            decimal totalAfterDiscount = basket.SumItems();
-            basket.UpdateRunningTotal(totalAfterDiscount);
         }
 
-        private void ApplyBulkDiscount(List<Item> items, int currentIndex)
+        private void ReducePriceForItemSet(List<Item> items, int currentIndex)
         {
             for (int j = 0; j < 10; j++)
             {
@@ -58,6 +61,21 @@ namespace acme_discount_engine.Discounts
         public bool isEligibleForBulkDiscount(Item item, int itemCount)
         {
             return itemCount == 10 && !TwoForOneList.Contains(item.Name) && item.Price >= 5.00;
+        }
+
+        private bool isFirstOfNewItem(Item item, string currentItem)
+        {
+            return item.Name != currentItem;
+        }
+
+        private void InitialiseNewItemCounter(out string currentItem, out int itemCount, Item item)
+        {
+            currentItem = item.Name;
+            itemCount = 1;
+        }
+        private void ResetCounter(int itemCount)
+        {
+            itemCount = 0;
         }
     }
 

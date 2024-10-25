@@ -19,30 +19,60 @@ namespace acme_discount_engine.Discounts
 
         public void ApplyTo(Basket basket)
         {
-            List<Item> items = basket.GetItems();
-            string currentItem = string.Empty;
+            ApplyAny2for1Discounts(basket.GetItems());
+
+            decimal totalAfterDiscount = basket.SumItems();
+
+            basket.UpdateTotalAfter2for1(totalAfterDiscount);
+            basket.UpdateRunningTotal(totalAfterDiscount);
+        }
+
+        private void ApplyAny2for1Discounts(List<Item> items)
+        {
+            string currentItem = "";
             int itemCount = 0;
-            for (int i = 0; i < items.Count; i++)
+            foreach (Item item in items)
             {
-                Item item = items[i];
-                if (item.Name != currentItem)
+                if (isFirstOfNewItem(item, currentItem))
                 {
-                    currentItem = item.Name;
-                    itemCount = 1;
+                    InitialiseNewItemCounter(out currentItem, out itemCount, item);
                 }
                 else
                 {
                     itemCount++;
-                    if (itemCount == 3 && TwoForOneList.Contains(item.Name))
+                    if (isEligibleFor2for1Discount(itemCount, item))
                     {
-                        item.Price = 0.00;
-                        itemCount = 0;
+                        DiscountPriceOf(item);
+                        ResetCounter(itemCount);
                     }
                 }
             }
-            decimal totalAfterDiscount = basket.SumItems();
-            basket.UpdateTotalAfter2for1(totalAfterDiscount);
-            basket.UpdateRunningTotal(totalAfterDiscount);
+        }
+
+        private void ResetCounter(int itemCount)
+        {
+            itemCount = 0;
+        }
+
+        private void DiscountPriceOf(Item item)
+        {
+            item.Price = 0.00;
+        }
+
+        private bool isEligibleFor2for1Discount(int itemCount, Item item)
+        {
+            return itemCount == 3 && TwoForOneList.Contains(item.Name);
+        }
+
+        private bool isFirstOfNewItem(Item item, string currentItem)
+        {
+            return item.Name != currentItem;
+        }
+
+        private void InitialiseNewItemCounter(out string currentItem, out int itemCount, Item item)
+        {
+            currentItem = item.Name;
+            itemCount = 1;
         }
     }
 }

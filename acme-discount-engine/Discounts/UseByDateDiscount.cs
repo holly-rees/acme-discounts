@@ -21,83 +21,100 @@ namespace acme_discount_engine.Discounts
         }
         public void ApplyTo(Basket basket)
         {
-            List<Item> items = basket.GetItems();
-            foreach (var item in items)
-            {
-                int daysUntilDate = (item.Date - DateTime.Today).Days;
-                if (DateTime.Today > item.Date) { daysUntilDate = -1; }
-                if (!item.IsPerishable && isAllowedDiscount(item))
-                {
-                    ApplyNonPerishableItemDiscount(item, daysUntilDate);
-                }
-                else
-                {
-                    if (daysUntilDate == 0)
-                    {
-                        ApplyPerishableItemDiscount(item);
-                    }
-                }
-            }
+            ApplyAnyUseByDateDiscounts(basket.GetItems());
+
             decimal totalAfterDiscount = basket.SumItems();
             basket.UpdateRunningTotal(totalAfterDiscount);
         }
 
-        public void ApplyPerishableItemDiscount(Item item)
+        private void ApplyAnyUseByDateDiscounts(List<Item> items)
         {
-            Money money = new Money(item.Price);
+            foreach (var item in items)
+            {
+                int daysUntilDate = CalculateDaysUntilUseByDate(item);
+                int discountPercent = 0;
+                Money price = new Money(item.Price);
 
+                if (isAllowedNonPerishableDiscount(item))
+                {
+                    discountPercent = CalculateNonPerishableDiscountPercentage(item, daysUntilDate);
+                }
+                if (isAllowedPerishableDiscount(item, daysUntilDate))
+                {
+                    discountPercent = CalculatePerishableDiscountPercentage(item);
+                }
+                price.ApplyDiscountByPercent(discountPercent);
+                item.Price = price.getAmountAsDouble();
+            }
+        }
+
+        private int CalculateDaysUntilUseByDate(Item item)
+        {
+            int daysUntilDate = (item.Date - DateTime.Today).Days;
+
+            if (isOutOfDate(item))
+            {
+                daysUntilDate = -1;
+            }
+
+            return daysUntilDate;
+        }
+
+        private bool isOutOfDate(Item item)
+        {
+            return DateTime.Today > item.Date;
+        }
+
+        private int CalculatePerishableDiscountPercentage(Item item)
+        {
             if (Time.Hour >= 0 && Time.Hour < 12)
             {
-                money.ApplyDiscountByPercent(5);
+                return 5;
             }
-            else if (Time.Hour >= 12 && Time.Hour < 16)
+            if (Time.Hour >= 12 && Time.Hour < 16)
             {
-                money.ApplyDiscountByPercent(10);
+                return 10;
             }
-            else if (Time.Hour >= 16 && Time.Hour < 18)
+            if (Time.Hour >= 16 && Time.Hour < 18)
             {
-                money.ApplyDiscountByPercent(15);
+                return 15;
             }
-            else if (Time.Hour >= 18)
+            if (Time.Hour >= 18)
             {
                 if (!item.Name.Contains("(Meat)"))
                 {
-                    money.ApplyDiscountByPercent(25);
+                    return 25;
                 }
-                else
-                {
-                    money.ApplyDiscountByPercent(15);
-                }
-
+                return 15;
             }
-            item.Price = money.getAmountAsDouble();
+            return 0;
         }
 
-        public void ApplyNonPerishableItemDiscount(Item item, int daysUntilDate)
+        private int CalculateNonPerishableDiscountPercentage(Item item, int daysUntilDate)
         {
-            Money money = new Money(item.Price);
-
-
             if (daysUntilDate >= 6 && daysUntilDate <= 10)
             {
-                money.ApplyDiscountByPercent(5);
+                return 5;
             }
             else if (daysUntilDate >= 0 && daysUntilDate <= 5)
             {
-                money.ApplyDiscountByPercent(10);
+                return 10;
             }
             else if (daysUntilDate < 0)
             {
-                money.ApplyDiscountByPercent(20);
+                return 20;
             }
-            item.Price = money.getAmountAsDouble();
+            return 0;
         }
 
-        public bool isAllowedDiscount(Item item)
+        private bool isAllowedNonPerishableDiscount(Item item)
         {
-            return !NoDiscount.Contains(item.Name);
+            return !item.IsPerishable && !NoDiscount.Contains(item.Name);
         }
 
-
+        private bool isAllowedPerishableDiscount(Item item, int daysUntilDate)
+        {
+            return item.IsPerishable && daysUntilDate == 0;
+        }
     }
 }
