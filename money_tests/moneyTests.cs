@@ -26,4 +26,17 @@ public class Tests
         decimal amount = money.getAmount();
         Assert.That(amount, Is.EqualTo(9.50));
     }
+
+    [Test]
+    public void TestComplexTransactionWithReset()
+    {
+        money.AddMoney(200);
+        money.ApplyDiscountByPercent(10);
+        money.AddMoney(50);
+        money.ApplyDiscountByPercent(5);
+        money.Reset();
+        money.AddMoney(100);
+        money.ApplyDiscountByPercent(15);
+        Assert.That(money.getAmount(), Is.EqualTo(85));
+    }
 }

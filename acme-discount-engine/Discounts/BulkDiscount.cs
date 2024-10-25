@@ -26,22 +26,21 @@ namespace acme_discount_engine.Discounts
 
         private void ApplyAnyBulkDiscounts(List<Item> items)
         {
-            string currentItem = string.Empty;
-            int itemCount = 0;
+            ItemCounter counter = new();
             for (int i = 0; i < items.Count; i++)
             {
                 Item item = items[i];
-                if (isFirstOfNewItem(item, currentItem))
+                if (counter.isFirstOfNewItem(item))
                 {
-                    InitialiseNewItemCounter(out currentItem, out itemCount, item);
+                    counter.initialiseNewItemCount(item);
                 }
                 else
                 {
-                    itemCount++;
-                    if (isEligibleForBulkDiscount(item, itemCount))
+                    counter.increaseCount();
+                    if (isEligibleForBulkDiscount(item, counter.getCount()))
                     {
                         ReducePriceForItemSet(items, i);
-                        ResetCounter(itemCount);
+                        counter.ResetCounter();
                     }
                 }
             }
@@ -61,21 +60,6 @@ namespace acme_discount_engine.Discounts
         public bool isEligibleForBulkDiscount(Item item, int itemCount)
         {
             return itemCount == 10 && !TwoForOneList.Contains(item.Name) && item.Price >= 5.00;
-        }
-
-        private bool isFirstOfNewItem(Item item, string currentItem)
-        {
-            return item.Name != currentItem;
-        }
-
-        private void InitialiseNewItemCounter(out string currentItem, out int itemCount, Item item)
-        {
-            currentItem = item.Name;
-            itemCount = 1;
-        }
-        private void ResetCounter(int itemCount)
-        {
-            itemCount = 0;
         }
     }
 
